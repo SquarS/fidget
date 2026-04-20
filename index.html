@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIDGET</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0c0c0c;--surf:#181818;--bdr:#282828;--tx:#ececec;--mt:#4a4a4a;--card:#141414;--ch:#1c1c1c;--btn:#1a1a1a;--tr:.32s cubic-bezier(.4,0,.2,1)}
+body.lt{--bg:#f2f2f2;--surf:#fff;--bdr:#ddd;--tx:#111;--mt:#aaa;--card:#fafafa;--ch:#efefef;--btn:#ebebeb}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,sans-serif;height:100vh;width:100vw;overflow:hidden;transition:background var(--tr),color var(--tr)}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transform:translateY(6px) scale(.99);transition:opacity .22s ease,transform .22s ease}
+.scr.on{opacity:1;pointer-events:all;transform:none}
+
+/* HOME */
+#home .logo{font-size:54px;font-weight:800;letter-spacing:20px;text-transform:uppercase;color:var(--tx);margin-bottom:10px}
+#home .sub{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--mt);margin-bottom:56px}
+.cards{display:flex;gap:12px}
+.card{width:130px;height:158px;background:var(--card);border:1px solid var(--bdr);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:background .18s,transform .18s,border-color .18s;user-select:none}
+.card:hover{background:var(--ch);transform:translateY(-5px);border-color:#3a3a3a}
+.card:active{transform:translateY(-2px)}
+.cico{font-size:34px;line-height:1}
+.clbl{font-size:9px;letter-spacing:3px;color:var(--mt);text-transform:uppercase}
+
+/* APP BAR */
+.bar{position:absolute;top:22px;left:26px;display:flex;align-items:center;gap:12px;z-index:20}
+.back{background:var(--btn);border:1px solid var(--bdr);color:var(--mt);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .15s,background .15s;font-family:inherit}
+.back:hover{color:var(--tx);background:var(--ch)}
+.atitle{font-size:9px;letter-spacing:3.5px;color:var(--mt);text-transform:uppercase}
+
+/* CLICKER */
+#s-clicker .cnt{font-size:100px;font-weight:800;letter-spacing:-4px;line-height:1;color:var(--tx);margin-bottom:44px;user-select:none}
+#s-clicker .cnt.pop{animation:pop .1s ease}
+@keyframes pop{50%{transform:scale(1.09)}}
+.redbtn-wrap{width:148px;height:148px;border-radius:50%;background:conic-gradient(from 0deg,#b0b0b0,#f0f0f0,#d0d0d0,#888,#e0e0e0,#bbb,#f5f5f5,#999,#b0b0b0);padding:7px;box-shadow:0 8px 28px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.3)}
+.redbtn{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ff7a7a,#be0020);border:none;cursor:pointer;outline:none;position:relative;box-shadow:0 6px 20px rgba(190,0,32,.45),inset 0 -6px 12px rgba(0,0,0,.45),inset 0 4px 7px rgba(255,140,140,.3);transition:transform .07s,box-shadow .07s}
+.redbtn::after{content:'';position:absolute;top:18%;left:22%;width:28%;height:15%;background:rgba(255,255,255,.22);border-radius:50%;transform:rotate(-35deg)}
+.redbtn:active{transform:scale(.91);box-shadow:0 2px 8px rgba(190,0,32,.35),inset 0 -2px 5px rgba(0,0,0,.35)}
+.csub{margin-top:20px;font-size:9px;letter-spacing:4px;color:var(--mt);text-transform:uppercase}
+
+/* SWITCH */
+.swscene{display:flex;flex-direction:column;align-items:center;gap:34px}
+.bulb{font-size:68px;transition:filter .4s}
+body.lt .bulb{filter:drop-shadow(0 0 18px rgba(255,200,40,.85))}
+.plate{width:86px;height:144px;background:var(--surf);border:1.5px solid var(--bdr);border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.35);position:relative;user-select:none}
+.plate:hover{border-color:#555}
+.tog{width:50px;height:70px;position:absolute;top:16px;background:linear-gradient(180deg,#e2e2e2,#b8b8b8);border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.45),inset 0 1px 3px rgba(255,255,255,.35);transition:top .2s cubic-bezier(.34,1.56,.64,1)}
+.tog.dn{top:58px}
+.swlbl{font-size:9px;letter-spacing:4px;color:var(--mt);text-transform:uppercase}
+
+/* WIPER */
+.wpscene{display:flex;flex-direction:column;align-items:center;gap:16px}
+.wframe{
+  position:relative;width:720px;height:500px;
+  border-radius:16px;overflow:hidden;cursor:crosshair;
+  box-shadow:0 28px 70px rgba(0,0,0,.65);
+  background:#1a1a1a center/cover no-repeat
+}
+#fog{position:absolute;inset:0;width:100%;height:100%}
+.wrow{display:flex;align-items:center;gap:20px}
+.whint{font-size:9px;letter-spacing:3px;color:var(--mt);text-transform:uppercase}
+.wreset{background:var(--btn);border:1px solid var(--bdr);color:var(--mt);padding:5px 14px;border-radius:7px;cursor:pointer;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:inherit}
+.wreset:hover{color:var(--tx)}
+
+/* WHEEL */
+.wlscene{display:flex;flex-direction:column;align-items:center;gap:18px}
+.warr{font-size:9px;letter-spacing:4px;color:var(--mt);text-transform:uppercase}
+.ynum{font-size:136px;font-weight:800;letter-spacing:-6px;line-height:1;color:var(--tx);user-select:none;transition:transform .13s ease,opacity .13s ease}
+.ynum.up{transform:translateY(-14px);opacity:.35}
+.ynum.dn{transform:translateY(14px);opacity:.35}
+.ysub{font-size:9px;letter-spacing:4px;color:var(--mt);text-transform:uppercase;margin-top:6px}
+
+/* LOCK */
+.lkscene{display:flex;flex-direction:column;align-items:center;gap:26px}
+.lkbody{background:var(--surf);border:1px solid var(--bdr);border-radius:24px;padding:38px 56px 46px;display:flex;flex-direction:column;align-items:center;gap:30px;box-shadow:0 28px 66px rgba(0,0,0,.45)}
+.shackle{width:58px;height:46px;border:7px solid var(--bdr);border-bottom:none;border-radius:29px 29px 0 0;transition:transform .5s cubic-bezier(.34,1.56,.64,1),border-color .4s}
+.shackle.open{transform:translateY(-18px) rotate(25deg);border-color:#4ade80}
+.dials{display:flex;gap:10px}
+.dcol{display:flex;flex-direction:column;align-items:center;gap:5px}
+.darr{font-size:9px;color:var(--mt)}
+.dial{width:68px;height:84px;background:#0a0a0a;border:1px solid #2e2e2e;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;user-select:none;position:relative;overflow:hidden;box-shadow:inset 0 0 22px rgba(0,0,0,.65)}
+.dial::before{content:'';position:absolute;top:0;left:0;right:0;height:26px;background:linear-gradient(to bottom,#0a0a0a,transparent);z-index:1;pointer-events:none}
+.dial::after{content:'';position:absolute;bottom:0;left:0;right:0;height:26px;background:linear-gradient(to top,#0a0a0a,transparent);z-index:1;pointer-events:none}
+.dn2{font-size:42px;font-weight:700;color:#f0f0f0;position:relative;z-index:2;line-height:1}
+.lkst{font-size:9px;letter-spacing:3px;color:var(--mt);text-transform:uppercase;transition:color .3s}
+.lkst.ok{color:#4ade80;letter-spacing:4px}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="scr on">
+  <div class="logo">Pidget</div>
+  <div class="sub">virtual interaction lab</div>
+  <div class="cards">
+    <div class="card" onclick="go('clicker')"><div class="cico">🔴</div><div class="clbl">Clicker</div></div>
+    <div class="card" onclick="go('switch')"><div class="cico">💡</div><div class="clbl">Switch</div></div>
+    <div class="card" onclick="go('wiper')"><div class="cico">🌫️</div><div class="clbl">Wiper</div></div>
+    <div class="card" onclick="go('wheel')"><div class="cico">🎡</div><div class="clbl">Wheel</div></div>
+    <div class="card" onclick="go('lock')"><div class="cico">🔒</div><div class="clbl">Lock</div></div>
+  </div>
+</div>
+
+<!-- CLICKER -->
+<div id="s-clicker" class="scr">
+  <div class="bar"><button class="back" onclick="back()">← Back</button><span class="atitle">Button Clicker</span></div>
+  <div class="cnt" id="cnt">0</div>
+  <div class="redbtn-wrap"><button class="redbtn" onmousedown="doClick()"></button></div>
+  <div class="csub">Clicks</div>
+</div>
+
+<!-- SWITCH -->
+<div id="s-switch" class="scr">
+  <div class="bar"><button class="back" onclick="back()">← Back</button><span class="atitle">Switch</span></div>
+  <div class="swscene">
+    <div class="bulb" id="bulb">🌑</div>
+    <div class="plate" onclick="doSwitch()"><div class="tog dn" id="tog"></div></div>
+    <div class="swlbl" id="swlbl">Light off</div>
+  </div>
+</div>
+
+<!-- WIPER -->
+<div id="s-wiper" class="scr">
+  <div class="bar"><button class="back" onclick="back()">← Back</button><span class="atitle">Wiper</span></div>
+  <div class="wpscene">
+    <div class="wframe" id="wframe">
+      <img id="wimg" src="" alt="">
+      <canvas id="fog"></canvas>
+    </div>
+    <div class="wrow">
+      <span class="whint">← Drag to wipe →</span>
+      <button class="wreset" onclick="resetFog()">↺ New Image</button>
+    </div>
+  </div>
+</div>
+
+<!-- WHEEL -->
+<div id="s-wheel" class="scr">
+  <div class="bar"><button class="back" onclick="back()">← Back</button><span class="atitle">Mouse Wheel</span></div>
+  <div class="wlscene">
+    <div class="warr">↑ 미래로</div>
+    <div class="ynum" id="ynum">2026</div>
+    <div class="ysub" id="ysub">현재 연도</div>
+    <div class="warr">↓ 과거로</div>
+  </div>
+</div>
+
+<!-- LOCK -->
+<div id="s-lock" class="scr">
+  <div class="bar"><button class="back" onclick="back()">← Back</button><span class="atitle">Combination Lock</span></div>
+  <div class="lkscene">
+    <div class="lkbody">
+      <div class="shackle" id="shackle"></div>
+      <div class="dials">
+        <div class="dcol"><span class="darr">▲</span><div class="dial" id="d0"><span class="dn2" id="v0">0</span></div><span class="darr">▼</span></div>
+        <div class="dcol"><span class="darr">▲</span><div class="dial" id="d1"><span class="dn2" id="v1">0</span></div><span class="darr">▼</span></div>
+        <div class="dcol"><span class="darr">▲</span><div class="dial" id="d2"><span class="dn2" id="v2">0</span></div><span class="darr">▼</span></div>
+      </div>
+    </div>
+    <div class="lkst" id="lkst">다이얼을 드래그하여 번호를 맞추세요</div>
+  </div>
+</div>
+
+<script>
+// ── AUDIO ──────────────────────────────────────────────────────────────
+let AC;
+const ac = () => { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); return AC; };
+
+function mkNoise(a, dur) {
+  const buf = a.createBuffer(1, Math.ceil(a.sampleRate * dur), a.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = a.createBufferSource(); src.buffer = buf; return src;
+}
+function clickLayer(a, nFreq, nQ, nVol, nDur, tFreq, tVol, tDur, delay) {
+  delay = delay || 0;
+  const t = a.currentTime + delay;
+  const src = mkNoise(a, nDur), flt = a.createBiquadFilter(), g = a.createGain();
+  flt.type = 'bandpass'; flt.frequency.value = nFreq; flt.Q.value = nQ;
+  g.gain.setValueAtTime(nVol, t); g.gain.exponentialRampToValueAtTime(0.001, t + nDur);
+  src.connect(flt); flt.connect(g); g.connect(a.destination); src.start(t);
+  const o = a.createOscillator(), og = a.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(tFreq, t); o.frequency.exponentialRampToValueAtTime(tFreq * 0.07, t + tDur);
+  og.gain.setValueAtTime(tVol, t); og.gain.exponentialRampToValueAtTime(0.001, t + tDur);
+  o.connect(og); og.connect(a.destination); o.start(t); o.stop(t + tDur + 0.01);
+}
+function sClick() {
+  const a = ac();
+  clickLayer(a, 4200, 1.8, 0.9, 0.016, 210, 0.45, 0.018, 0);
+  clickLayer(a, 8000, 3.0, 0.3, 0.008, 400, 0.10, 0.008, 0);
+}
+function sSwitch() {
+  const a = ac();
+  clickLayer(a, 3000, 1.4, 1.1, 0.024, 140, 0.65, 0.026, 0);
+  clickLayer(a, 5500, 2.5, 0.4, 0.012, 280, 0.18, 0.012, 0);
+  setTimeout(() => clickLayer(a, 4000, 2.0, 0.45, 0.014, 190, 0.22, 0.014, 0), 28);
+}
+function sTick() {
+  const a = ac();
+  clickLayer(a, 3800, 2.2, 0.5, 0.012, 220, 0.28, 0.012, 0);
+}
+function sUnlock() {
+  [523, 659, 784].forEach((f, i) => setTimeout(() => {
+    const a = ac(), t = a.currentTime;
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.13, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.23);
+  }, i * 130));
+}
+function sWipe() {
+  const a = ac(), t = a.currentTime, dur = 0.11;
+  const buf = a.createBuffer(1, Math.ceil(a.sampleRate * dur), a.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = a.createBufferSource(); src.buffer = buf;
+  const hp = a.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1100;
+  const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6500;
+  const pk = a.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 2800; pk.gain.value = 5; pk.Q.value = 0.7;
+  const g = a.createGain();
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.055, t + 0.012);
+  g.gain.setValueAtTime(0.055, t + dur - 0.018); g.gain.linearRampToValueAtTime(0, t + dur);
+  src.connect(hp); hp.connect(lp); lp.connect(pk); pk.connect(g); g.connect(a.destination);
+  src.start(t);
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────
+let cur = 'home';
+const scrs = {
+  home: document.getElementById('home'),
+  clicker: document.getElementById('s-clicker'),
+  switch: document.getElementById('s-switch'),
+  wiper: document.getElementById('s-wiper'),
+  wheel: document.getElementById('s-wheel'),
+  lock: document.getElementById('s-lock')
+};
+function go(n) {
+  scrs[cur].classList.remove('on'); cur = n; scrs[n].classList.add('on');
+  if (n === 'wiper') initWiper();
+  if (n === 'wheel') initWheel();
+  if (n === 'lock') initLock();
+}
+function back() { scrs[cur].classList.remove('on'); cur = 'home'; scrs.home.classList.add('on'); }
+
+// ── CLICKER ────────────────────────────────────────────────────────────
+let clicks = 0;
+const cntEl = document.getElementById('cnt');
+function doClick() {
+  sClick(); clicks++;
+  cntEl.textContent = clicks.toLocaleString();
+  cntEl.classList.remove('pop'); void cntEl.offsetWidth; cntEl.classList.add('pop');
+}
+
+// ── SWITCH ─────────────────────────────────────────────────────────────
+let litOn = false;
+const tog = document.getElementById('tog'), bulb = document.getElementById('bulb'), swlbl = document.getElementById('swlbl');
+tog.classList.add('dn');
+function doSwitch() {
+  sSwitch(); litOn = !litOn;
+  tog.classList.toggle('dn', !litOn);
+  bulb.textContent = litOn ? '💡' : '🌑';
+  swlbl.textContent = litOn ? 'Light on' : 'Light off';
+  document.body.classList.toggle('lt', litOn);
+}
+
+// ── WIPER ──────────────────────────────────────────────────────────────
+const POOL = [
+  '1919021-amsterdam-1150319_1920.jpg',
+  'robert1029-rain-3915684_1920.jpg',
+  'terbe_rezso-bird-9163532_1920.jpg',
+  'terbe_rezso-reed-9540853_1920.jpg'
+];
+let fogCtx = null, fogReady = false, wiping = false, wx = 0, wy = 0, wt = 0;
+
+function pt(e, el) { const r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+
+function loadWiperImg() {
+  const img = document.getElementById('wimg');
+  const url = POOL[Math.floor(Math.random() * POOL.length)];
+  img.onerror = () => {
+    img.onerror = null;
+    img.src = `https://picsum.photos/720/500?random=${Math.floor(Math.random()*999)}`;
+  };
+  img.src = url;
+}
+
+function drawFog() {
+  if (!fogCtx) return;
+  const c = fogCtx, w = c.canvas.width, h = c.canvas.height;
+  c.globalCompositeOperation = 'source-over';
+  c.fillStyle = 'rgba(172,188,200,.92)'; c.fillRect(0, 0, w, h);
+  for (let i = 0; i < 6000; i++) {
+    c.fillStyle = `rgba(255,255,255,${Math.random() * 0.16})`;
+    c.fillRect(Math.random() * w, Math.random() * h, Math.random() * 3 + 1, Math.random() * 3 + 1);
+  }
+  for (let i = 0; i < 36; i++) {
+    c.strokeStyle = `rgba(255,255,255,${Math.random() * 0.06})`; c.lineWidth = Math.random() * 1.5 + 0.5;
+    c.beginPath(); c.moveTo(Math.random() * w, Math.random() * h); c.lineTo(Math.random() * w, Math.random() * h); c.stroke();
+  }
+}
+
+function initWiper() {
+  const cv = document.getElementById('fog'), fr = document.getElementById('wframe');
+  loadWiperImg();
+  if (!fogReady) {
+    fogReady = true;
+    cv.addEventListener('mousedown', e => { wiping = true; const p = pt(e, cv); wx = p.x; wy = p.y; });
+    cv.addEventListener('mousemove', e => {
+      if (!wiping) return;
+      const p = pt(e, cv);
+      fogCtx.globalCompositeOperation = 'destination-out';
+      fogCtx.beginPath(); fogCtx.moveTo(wx, wy); fogCtx.lineTo(p.x, p.y);
+      fogCtx.strokeStyle = 'rgba(0,0,0,1)'; fogCtx.lineWidth = 64;
+      fogCtx.lineCap = 'round'; fogCtx.lineJoin = 'round'; fogCtx.stroke();
+      const now = Date.now(); if (now - wt > 80) { sWipe(); wt = now; }
+      wx = p.x; wy = p.y;
+    });
+    ['mouseup', 'mouseleave'].forEach(ev => cv.addEventListener(ev, () => wiping = false));
+  }
+  // delay so layout is settled before reading dimensions
+  setTimeout(() => {
+    cv.width = fr.offsetWidth || 720;
+    cv.height = fr.offsetHeight || 500;
+    fogCtx = cv.getContext('2d');
+    drawFog();
+  }, 40);
+}
+
+function resetFog() {
+  loadWiperImg();
+  if (!fogCtx) return;
+  fogCtx.globalCompositeOperation = 'source-over';
+  fogCtx.clearRect(0, 0, fogCtx.canvas.width, fogCtx.canvas.height);
+  drawFog();
+}
+
+// ── WHEEL ──────────────────────────────────────────────────────────────
+let yr = 2026, wlReady = false;
+const ynumEl = document.getElementById('ynum'), ysubEl = document.getElementById('ysub');
+function initWheel() {
+  if (wlReady) return; wlReady = true;
+  document.getElementById('s-wheel').addEventListener('wheel', e => {
+    e.preventDefault();
+    const up = e.deltaY < 0; yr += up ? 1 : -1;
+    ynumEl.textContent = yr;
+    ynumEl.classList.remove('up', 'dn'); void ynumEl.offsetWidth; ynumEl.classList.add(up ? 'up' : 'dn');
+    sTick();
+    setTimeout(() => ynumEl.classList.remove('up', 'dn'), 155);
+    const diff = yr - 2026;
+    ysubEl.textContent = diff === 0 ? '현재 연도' : diff > 0 ? `현재로부터 +${diff}년` : `현재로부터 ${Math.abs(diff)}년 전`;
+  }, { passive: false });
+}
+
+// ── LOCK ───────────────────────────────────────────────────────────────
+const SEC = [7, 4, 2];
+const dvs = [{ v: 0 }, { v: 0 }, { v: 0 }];
+let dragI = -1, dragY = 0, dragV = 0, unlocked = false, lkReady = false;
+function initLock() {
+  if (lkReady) return; lkReady = true;
+  [0, 1, 2].forEach(i => {
+    document.getElementById('d' + i).addEventListener('mousedown', e => { dragI = i; dragY = e.clientY; dragV = dvs[i].v; e.preventDefault(); });
+  });
+  document.addEventListener('mousemove', e => {
+    if (dragI < 0) return;
+    const nv = ((dragV + Math.round((dragY - e.clientY) / 18)) % 10 + 10) % 10;
+    if (nv !== dvs[dragI].v) { dvs[dragI].v = nv; document.getElementById('v' + dragI).textContent = nv; sTick(); checkLock(); }
+  });
+  document.addEventListener('mouseup', () => { dragI = -1; });
+}
+function checkLock() {
+  const open = dvs.every((d, i) => d.v === SEC[i]);
+  document.getElementById('shackle').classList.toggle('open', open);
+  const st = document.getElementById('lkst');
+  if (open) { st.textContent = '✦ UNLOCKED ✦'; st.classList.add('ok'); if (!unlocked) { sUnlock(); unlocked = true; } }
+  else { st.textContent = '다이얼을 드래그하여 번호를 맞추세요'; st.classList.remove('ok'); unlocked = false; }
+}
+</script>
+</body>
+</html>
